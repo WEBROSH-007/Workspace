@@ -1,0 +1,64 @@
+ARCHITECTURE NOTES – Room Booking Dashboard
+===========================================
+
+STATE MANAGEMENT APPROACH
+--------------------------
+Used React's built-in useReducer + Context API via a single AppContext.
+Rationale: The app has two distinct state domains (auth & bookings) but low overall 
+complexity. Adding Redux or Zustand would be over-engineering. useReducer gives 
+predictable state transitions (similar to Redux) without the boilerplate, while 
+Context provides a clean global access pattern. All dispatch actions are typed 
+strings making the data flow easy to trace.
+
+FOLDER STRUCTURE
+-----------------
+/app            → Next.js App Router pages (login, dashboard, bookings)
+/components     → UI primitives (ui/), layout (layout/), feature components (rooms/, bookings/)
+/context        → AppContext (global state)
+/services       → api.js (all async service calls in one place — easy to swap real API in)
+/data           → rooms.js (mock data — isolated so swapping to real API needs zero component changes)
+/hooks          → Reserved for custom hooks (e.g., useFetch, useDebounce) as the app grows
+
+API FAILURE HANDLING
+---------------------
+Every service call is wrapped in try/catch. Errors are surfaced as user-readable 
+messages via the Alert component. No silent failures. The BookingModal and Login 
+page both have dedicated apiError state slots so errors render contextually, 
+not globally. Loading states use per-action booleans (not a single global loader) 
+to avoid blocking unrelated UI.
+
+LOADING STATES
+---------------
+- Dashboard page: Full-screen centered spinner with descriptive text while rooms load
+- BookingModal: Button-level loading (spinner inside the button) so context is preserved
+- Login: Button-level loading on the Sign In action
+- Empty states: Distinct UI for "no results" vs "error" vs "still loading"
+
+SCALING TO 1000+ ROOMS
+------------------------
+1. Pagination or infinite scroll – fetch rooms in pages of 20–30 via cursor-based API
+2. Server-side filtering/search – move filter/sort logic to the API rather than client-side useMemo
+3. Virtualized list – use react-window or TanStack Virtual to render only visible DOM nodes
+4. Image lazy loading – already implemented via loading="lazy" on all room images
+5. React.memo on RoomCard – already applied to prevent re-renders on unrelated state changes
+6. useMemo for filter pipeline – already applied to avoid recomputing on every render
+
+PERFORMANCE DECISIONS
+----------------------
+- RoomCard is wrapped in React.memo to avoid re-renders when parent state changes
+- Filter/sort logic uses useMemo with correct dependency arrays
+- Modal is conditionally rendered (not just hidden) to avoid mounting heavy DOM until needed
+- Services use artificial delays that simulate real API latency for realistic UX testing
+
+MOCK AUTH
+----------
+Single hardcoded user (alex@workspace.io / password123). In production, replace 
+authService.login() with a real JWT/session endpoint. The Context login() action 
+stores only a lightweight user object (no tokens in state – those would go in 
+httpOnly cookies in a real app).
+
+AVAILABILITY LOGIC
+-------------------
+Mock: Room r3 (Boardroom Apex) is unavailable on weekends to demo the "not available" 
+flow. Real implementation would query a bookings table and check for date overlaps 
+(startDate < existingEnd AND endDate > existingStart).

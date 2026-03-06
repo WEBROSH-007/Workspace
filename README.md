@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Workspace – Room Booking Dashboard
 
-## Getting Started
+A clean, production-grade room booking app built with **Next.js 14 (App Router)** + **Tailwind CSS**.
 
-First, run the development server:
+## Setup
 
 ```bash
+# 1. Copy all files into your existing Next.js project
+
+# 2. Install dependencies (already included with Next.js + Tailwind)
+npm install
+
+# 3. Run the dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Demo Credentials
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+Email:    alex@workspace.io
+Password: password123
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+  layout.jsx          # Root layout with AppProvider
+  page.jsx            # Redirects to /login
+  login/page.jsx      # Login page
+  dashboard/page.jsx  # Room listing dashboard
+  bookings/page.jsx   # My Bookings page
+  globals.css         # Global styles
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+components/
+  ui/index.jsx                  # Button, Input, Badge, Card, Spinner, etc.
+  layout/Navbar.jsx             # Sticky navigation bar
+  rooms/RoomCard.jsx            # Room listing card
+  rooms/BookingModal.jsx        # 3-step booking flow modal
+  rooms/RoomFilters.jsx         # Search, filter, sort controls
+  bookings/BookingCard.jsx      # Booking history card
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+context/
+  AppContext.jsx      # Auth + bookings state (useReducer + Context)
 
-## Deploy on Vercel
+services/
+  api.js              # Mock async service layer
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+data/
+  rooms.js            # Mock room data + MOCK_USER
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+architecture-notes.txt  # Design decisions explained
+```
+
+## Features
+
+- Mock login with form validation
+- Protected routes
+- Room listing with search, filter by type, sort by price/capacity
+- 3-step booking flow: dates → confirm → success
+- Availability checking (try booking Boardroom Apex on a weekend to see "unavailable")
+- My Bookings page with upcoming/past split
+- Full loading, empty, and error states
+- Responsive design (mobile-first)
+- React.memo + useMemo optimizations
