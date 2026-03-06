@@ -128,7 +128,7 @@ export default function LoginPage() {
           <Button
             onClick={handleSubmit}
             loading={loading}
-            className="w-full mt-6 cursor-pointer"
+            className="w-full mt-6"
             size="lg"
           >
             Sign in
